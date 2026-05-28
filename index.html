@@ -1,3 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Revenue Clutch Audit Engine</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+
+    body{
+      font-family:Arial;
+      background:#f5f7fb;
+      padding:30px;
+      max-width:1400px;
+      margin:auto;
+    }
+
+    h1{
+      font-size:42px;
+      margin-bottom:10px;
+    }
+
+    textarea{
+      width:100%;
+      height:180px;
+      padding:15px;
+      font-size:16px;
+      border-radius:10px;
+      border:1px solid #ccc;
+      margin-top:10px;
+    }
+
+    button{
+      background:black;
+      color:white;
+      border:none;
+      padding:15px 30px;
+      margin-top:20px;
+      cursor:pointer;
+      border-radius:8px;
+      font-size:16px;
+    }
+
+    #downloadBtn{
+      background:#0a7cff;
+      margin-left:10px;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      background:white;
+      margin-top:20px;
+    }
+
+    th{
+      background:black;
+      color:white;
+      padding:12px;
+      text-align:left;
+    }
+
+    td{
+      padding:12px;
+      border-bottom:1px solid #eee;
+      vertical-align:top;
+    }
+
+    .score-good{
+      color:green;
+      font-weight:bold;
+    }
+
+    .score-mid{
+      color:orange;
+      font-weight:bold;
+    }
+
+    .score-bad{
+      color:red;
+      font-weight:bold;
+    }
+
+    .card{
+      background:white;
+      padding:20px;
+      border-radius:12px;
+      min-width:220px;
+      box-shadow:0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    #stats{
+      display:flex;
+      gap:20px;
+      margin-top:30px;
+      margin-bottom:30px;
+      flex-wrap:wrap;
+    }
+
+    .chart-container{
+      background:white;
+      padding:20px;
+      border-radius:12px;
+      margin-top:30px;
+      box-shadow:0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .history-box{
+      background:white;
+      padding:20px;
+      border-radius:12px;
+      margin-top:40px;
+      box-shadow:0 2px 10px rgba(0,0,0,0.08);
+    }
+
+  </style>
+</head>
+
+<body>
+
+<h1>Revenue Clutch Audit Engine</h1>
+
+<p>Paste one domain per line:</p>
+
+<textarea id="domains">
+example.com
+cloudflare.com
+openai.com
+vercel.com
+</textarea>
+
+<br>
+
+<button onclick="analyzeDomains()">
+Analyze Domains
+</button>
+
+<button id="downloadBtn" onclick="downloadCSV()">
+Export CSV
+</button>
+
+<!-- DASHBOARD STATS -->
+
+<div id="stats">
+
+  <div class="card">
+    <h3>Total Audits</h3>
+    <h1 id="totalAudits">0</h1>
+  </div>
+
+  <div class="card">
+    <h3>Average SEO Score</h3>
+    <h1 id="avgScore">0</h1>
+  </div>
+
+  <div class="card">
+    <h3>Best Score</h3>
+    <h1 id="bestScore">0</h1>
+  </div>
+
+</div>
+
+<!-- CHART -->
+
+<div class="chart-container">
+
+  <h2>SEO Score Chart</h2>
+
+  <div style="height:400px;">
+    <canvas id="scoreChart"></canvas>
+  </div>
+
+</div>
+
+<!-- RESULTS TABLE -->
+
+<div style="overflow-x:auto;">
+
+<table id="resultsTable">
+
+<thead>
+<tr>
+<th>Domain</th>
+<th>Title</th>
+<th>Description</th>
+<th>H1</th>
+<th>Score</th>
+<th>AI Analysis</th>
+</tr>
+</thead>
+
+<tbody></tbody>
+
+</table>
+
+</div>
+
+<!-- HISTORY -->
+
+<div class="history-box">
+
+  <h2>Recent Audit History</h2>
+
+  <table id="historyTable">
+
+    <thead>
+      <tr>
+        <th>Domain</th>
+        <th>Score</th>
+        <th>AI Analysis</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+
+    <tbody></tbody>
+
+  </table>
+
+</div>
+
 <script>
 
 let auditResults = [];
@@ -38,6 +258,10 @@ async function analyzeDomains(){
 
       auditResults.push(data);
 
+      updateDashboardStats();
+
+      renderChart();
+
       let scoreClass = "score-good";
 
       if(data.score < 80){
@@ -77,9 +301,7 @@ async function analyzeDomains(){
 
   }
 
-  updateDashboardStats();
-
-  renderChart();
+  loadHistory();
 
 }
 
@@ -216,8 +438,10 @@ async function loadHistory(){
 
     tbody.innerHTML = "";
 
-    // SHOW ONLY LAST 5
-    data.slice(0,5).forEach(row => {
+    const recent =
+      data.slice(0,5);
+
+    recent.forEach(row => {
 
       tbody.innerHTML += `
         <tr>
@@ -241,4 +465,6 @@ async function loadHistory(){
 loadHistory();
 
 </script>
-```
+
+</body>
+</html>
