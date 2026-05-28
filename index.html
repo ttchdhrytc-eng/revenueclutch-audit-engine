@@ -141,7 +141,11 @@ async function analyzeDomains(){
         "https://audit-api.t-tchdhry-tc.workers.dev/?domain=" + domain
       );
 
-      const data = await response.json();
+     const text = await response.text();
+
+console.log(text);
+
+const data = JSON.parse(text);
 
       auditResults.push(data);
 
@@ -170,15 +174,17 @@ async function analyzeDomains(){
 
     }catch(err){
 
-      tbody.innerHTML += `
-        <tr>
-          <td colspan="6">
-            Error analyzing ${domain}
-          </td>
-        </tr>
-      `;
+  console.log(err);
 
-    }
+  tbody.innerHTML += `
+    <tr>
+      <td colspan="6">
+        ${err}
+      </td>
+    </tr>
+  `;
+
+}
 
   }
 
