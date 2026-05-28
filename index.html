@@ -223,7 +223,7 @@ Export CSV
 
 <div class="history-box">
 
-<h2>Recent Audit History</h2>
+<h2>Last 5 Audits</h2>
 
 <div class="table-wrapper">
 
@@ -451,6 +451,8 @@ function downloadCSV(){
 
 }
 
+<script>
+
 async function loadHistory(){
 
   try{
@@ -466,7 +468,8 @@ async function loadHistory(){
 
     tbody.innerHTML = "";
 
-    data.forEach(row => {
+    // ONLY LAST 5 RECORDS
+    data.slice(0,5).forEach(row => {
 
       tbody.innerHTML += `
         <tr>
@@ -490,7 +493,6 @@ async function loadHistory(){
 loadHistory();
 
 </script>
-
 </body>
 </html>
 ```
