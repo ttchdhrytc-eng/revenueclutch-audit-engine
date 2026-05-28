@@ -472,58 +472,88 @@ async function analyzeDomains(){
       .filter(Boolean);
 
   if(domains.length === 0){
+
     alert("Please enter at least one domain");
+
     return;
+
   }
+
+  auditResults = [];
 
   const tbody =
     document.querySelector("#resultsTable tbody");
 
   tbody.innerHTML = "";
 
-  auditResults = [];
+  const loadingBox =
+    document.getElementById("loadingBox");
 
-  document.getElementById("loadingBox")
-    .style.display = "flex";
+  loadingBox.style.display = "flex";
 
-  for(let i=0; i<domains.length; i++){
+  document.getElementById("loadingText")
+    .innerText =
+      `Analyzing ${domains.length} domains in parallel...`;
 
-    const domain = domains[i];
+  try{
 
-    document.getElementById("loadingText")
-      .innerText = `Analyzing ${domain} (${i+1}/${domains.length})`;
+    const promises = domains.map(async(domain)=>{
 
-    try{
+      try{
 
-      const response = await fetch(
-        "https://audit-api.t-tchdhry-tc.workers.dev/?domain=" + domain
-      );
+        const response = await fetch(
+          "https://audit-api.t-tchdhry-tc.workers.dev/?domain=" + domain
+        );
 
-      const data = await response.json();
+        const data = await response.json();
 
-      auditResults.push(data);
+        console.log(data);
 
-      renderTable(data);
+        auditResults.push(data);
 
-      updateDashboardStats();
+        renderTable(data);
 
-      renderChart();
+        updateDashboardStats();
 
-    }catch(err){
+        renderChart();
 
-      console.log(err);
+        return data;
 
-    }
+      }catch(err){
+
+        console.log(err);
+
+        tbody.innerHTML += `
+
+          <tr>
+
+            <td colspan="5">
+
+              Failed to analyze ${domain}
+
+            </td>
+
+          </tr>
+
+        `;
+
+      }
+
+    });
+
+    await Promise.all(promises);
+
+  }catch(err){
+
+    console.log(err);
 
   }
 
-  document.getElementById("loadingBox")
-    .style.display = "none";
+  loadingBox.style.display = "none";
 
   loadHistory();
 
 }
-
 function renderTable(data){
 
   const tbody =
