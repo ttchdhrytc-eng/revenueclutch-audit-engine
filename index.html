@@ -393,7 +393,17 @@ vercel.com"></textarea>
     </div>
 
   </div>
+<div class="stat-card">
 
+  <h3>
+    Average Performance
+  </h3>
+
+  <h1 id="avgPerformance">
+    0
+  </h1>
+
+</div>
   <div class="historyCard">
 
     <h2>Recent Audit History</h2>
@@ -659,7 +669,7 @@ function updateDashboardStats(){
   const scores =
     auditResults.map(r => Number(r.score || 0));
 
-  const performances =
+  const performanceScores =
     auditResults.map(r => Number(r.performance || 0));
 
   const avg =
@@ -673,8 +683,8 @@ function updateDashboardStats(){
 
   const avgPerformance =
     Math.round(
-      performances.reduce((a,b)=>a+b,0)
-      / performances.length
+      performanceScores.reduce((a,b)=>a+b,0)
+      / performanceScores.length
     );
 
   document.getElementById("avgScore")
@@ -687,7 +697,6 @@ function updateDashboardStats(){
     .innerText = avgPerformance;
 
 }
-
 function renderChart(){
 
   const ctx =
