@@ -559,46 +559,54 @@ function renderTable(data){
   const tbody =
     document.querySelector("#resultsTable tbody");
 
-  const grade = getGrade(data.score || 0);
+  let scoreClass = "score-good";
+
+  if(data.score < 80){
+    scoreClass = "score-mid";
+  }
+
+  if(data.score < 50){
+    scoreClass = "score-bad";
+  }
 
   tbody.innerHTML += `
 
     <tr>
 
       <td>
-        <strong>${data.domain || ""}</strong>
-      </td>
-
-      <td>
-        <span class="badge ${grade.class}">
-          ${grade.text}
-        </span>
-        <br><br>
-        <strong>${data.score || 0}/100</strong>
+        ${data.domain || ""}
       </td>
 
       <td>
 
-        <div class="metricGrid">
+        <div class="score-badge ${scoreClass}">
+          ${data.score || 0}
+        </div>
 
-          <div class="metricItem">
-            <h4>Performance</h4>
-            <h2>${data.performance || 0}</h2>
+      </td>
+
+      <td>
+
+        <div class="metric-grid">
+
+          <div class="metric-card">
+            <span>Performance</span>
+            <strong>${data.performance || 0}</strong>
           </div>
 
-          <div class="metricItem">
-            <h4>Access.</h4>
-            <h2>${data.accessibility || 0}</h2>
+          <div class="metric-card">
+            <span>Accessibility</span>
+            <strong>${data.accessibility || 0}</strong>
           </div>
 
-          <div class="metricItem">
-            <h4>Best</h4>
-            <h2>${data.bestPractices || 0}</h2>
+          <div class="metric-card">
+            <span>Best Practices</span>
+            <strong>${data.bestPractices || 0}</strong>
           </div>
 
-          <div class="metricItem">
-            <h4>SEO</h4>
-            <h2>${data.seoScore || 0}</h2>
+          <div class="metric-card">
+            <span>SEO</span>
+            <strong>${data.seoScore || 0}</strong>
           </div>
 
         </div>
@@ -607,23 +615,33 @@ function renderTable(data){
 
       <td>
 
-        <strong>Title:</strong><br>
-        ${data.title || "Missing"}
+        <div class="meta-box">
 
-        <br><br>
+          <strong>Title:</strong>
+          ${data.title || "Missing"}
 
-        <strong>Description:</strong><br>
-        ${data.description || "Missing"}
+          <br><br>
 
-        <br><br>
+          <strong>Description:</strong>
+          ${data.description || "Missing"}
 
-        <strong>H1:</strong><br>
-        ${data.h1 || "Missing"}
+          <br><br>
+
+          <strong>H1:</strong>
+          ${data.h1 || "Missing"}
+
+        </div>
 
       </td>
 
       <td>
-        ${data.ai || "No analysis available"}
+
+        <div class="recommendation-box">
+
+          ${data.ai || ""}
+
+        </div>
+
       </td>
 
     </tr>
@@ -631,7 +649,6 @@ function renderTable(data){
   `;
 
 }
-
 function updateDashboardStats(){
 
   if(auditResults.length === 0) return;
