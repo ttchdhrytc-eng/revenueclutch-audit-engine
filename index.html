@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Revenue Clutch Audit Engine</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
@@ -14,283 +16,606 @@
 <style>
 
 *{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
+margin:0;
+padding:0;
+box-sizing:border-box;
 }
 
 body{
-  font-family:Arial,sans-serif;
-  background:#f4f7fb;
-  color:#111827;
+font-family:'Inter',sans-serif;
+background:#050816;
+color:white;
+overflow-x:hidden;
+}
+
+body::before{
+content:"";
+position:fixed;
+inset:0;
+background:
+radial-gradient(circle at top left,#1d4ed822,transparent 25%),
+radial-gradient(circle at bottom right,#7c3aed22,transparent 25%),
+#050816;
+z-index:-1;
 }
 
 .container{
-  max-width:1500px;
-  margin:auto;
-  padding:30px 20px 80px;
+max-width:1600px;
+margin:auto;
+padding:40px 24px 120px;
 }
 
 .hero{
-  background:linear-gradient(135deg,#0f172a,#111827);
-  border-radius:24px;
-  padding:45px;
-  color:white;
-  margin-bottom:30px;
+background:linear-gradient(135deg,#0f172a,#020617);
+border:1px solid rgba(255,255,255,0.08);
+border-radius:32px;
+padding:60px;
+position:relative;
+overflow:hidden;
+box-shadow:
+0 20px 60px rgba(0,0,0,0.45),
+0 0 120px rgba(59,130,246,0.08);
+}
+
+.hero::before{
+content:"";
+position:absolute;
+width:500px;
+height:500px;
+background:radial-gradient(circle,#2563eb44,transparent 70%);
+right:-120px;
+top:-120px;
+}
+
+.hero-grid{
+display:grid;
+grid-template-columns:1.2fr 0.8fr;
+gap:40px;
+align-items:center;
 }
 
 .hero h1{
-  font-size:46px;
-  margin-bottom:12px;
+font-size:64px;
+font-weight:900;
+line-height:1;
+margin-bottom:20px;
+max-width:850px;
+}
+
+.gradient-text{
+background:linear-gradient(90deg,#60a5fa,#c084fc);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
 }
 
 .hero p{
-  opacity:0.85;
-  font-size:18px;
-  margin-bottom:25px;
+font-size:20px;
+line-height:1.7;
+color:#94a3b8;
+max-width:750px;
+margin-bottom:40px;
+}
+
+.hero-stats{
+display:flex;
+gap:20px;
+flex-wrap:wrap;
+}
+
+.hero-stat{
+background:rgba(255,255,255,0.05);
+border:1px solid rgba(255,255,255,0.08);
+padding:20px 26px;
+border-radius:22px;
+backdrop-filter:blur(10px);
+}
+
+.hero-stat h2{
+font-size:34px;
+margin-bottom:6px;
+}
+
+.hero-stat span{
+color:#94a3b8;
+font-size:14px;
+}
+
+.audit-box{
+background:rgba(255,255,255,0.05);
+border:1px solid rgba(255,255,255,0.08);
+border-radius:28px;
+padding:30px;
+backdrop-filter:blur(20px);
+}
+
+.audit-box h3{
+font-size:24px;
+margin-bottom:18px;
+}
+
+.audit-box p{
+font-size:15px;
+margin-bottom:20px;
+}
+
+.input-group{
+display:flex;
+flex-direction:column;
+gap:14px;
+margin-bottom:18px;
+}
+
+.input-group input,
+textarea{
+background:#020617;
+border:1px solid rgba(255,255,255,0.08);
+color:white;
+padding:18px;
+border-radius:18px;
+font-size:15px;
+outline:none;
+width:100%;
 }
 
 textarea{
-  width:100%;
-  height:180px;
-  border:none;
-  border-radius:18px;
-  padding:20px;
-  font-size:16px;
-  resize:vertical;
+height:180px;
+resize:vertical;
 }
 
-.buttonRow{
-  display:flex;
-  gap:14px;
-  margin-top:20px;
-  flex-wrap:wrap;
+.button-row{
+display:flex;
+gap:14px;
+flex-wrap:wrap;
+margin-top:16px;
 }
 
 button{
-  border:none;
-  border-radius:14px;
-  padding:14px 26px;
-  font-size:15px;
-  cursor:pointer;
-  font-weight:bold;
+border:none;
+padding:16px 24px;
+border-radius:16px;
+font-weight:700;
+font-size:15px;
+cursor:pointer;
+transition:0.25s;
 }
 
-.primaryBtn{
-  background:#2563eb;
-  color:white;
+button:hover{
+transform:translateY(-3px);
 }
 
-.secondaryBtn{
-  background:#111827;
-  color:white;
+.primary-btn{
+background:linear-gradient(90deg,#2563eb,#7c3aed);
+color:white;
+box-shadow:0 10px 30px rgba(37,99,235,0.3);
 }
 
-.dangerBtn{
-  background:#dc2626;
-  color:white;
+.secondary-btn{
+background:#111827;
+color:white;
 }
 
-.loadingBox{
-  display:none;
-  align-items:center;
-  gap:15px;
-  margin-top:25px;
-  background:white;
-  color:#111827;
-  border-radius:18px;
-  padding:18px 20px;
-}
-
-.spinner{
-  width:28px;
-  height:28px;
-  border:4px solid #ddd;
-  border-top:4px solid #2563eb;
-  border-radius:50%;
-  animation:spin 1s linear infinite;
-}
-
-@keyframes spin{
-  100%{
-    transform:rotate(360deg);
-  }
-}
-
-.statsGrid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:20px;
-}
-
-.card{
-  background:white;
-  padding:24px;
-  border-radius:20px;
-  box-shadow:0 4px 14px rgba(0,0,0,0.08);
-}
-
-.card h3{
-  color:#666;
-  margin-bottom:12px;
-}
-
-.card h1{
-  font-size:42px;
+.danger-btn{
+background:#dc2626;
+color:white;
 }
 
 .section{
-  background:white;
-  border-radius:22px;
-  padding:25px;
-  margin-top:30px;
-  box-shadow:0 4px 14px rgba(0,0,0,0.08);
+margin-top:40px;
 }
 
-.chartWrap{
-  height:420px;
-  margin-top:25px;
+.grid-4{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:24px;
 }
 
-.tableWrap{
-  overflow-x:auto;
-  margin-top:25px;
+.stat-card{
+background:rgba(255,255,255,0.05);
+border:1px solid rgba(255,255,255,0.08);
+border-radius:26px;
+padding:30px;
+backdrop-filter:blur(20px);
 }
 
-table{
-  width:100%;
-  border-collapse:collapse;
-  min-width:1600px;
+.stat-card span{
+color:#94a3b8;
+font-size:14px;
+display:block;
+margin-bottom:12px;
 }
 
-th{
-  background:#0f172a;
-  color:white;
-  padding:16px;
-  text-align:left;
+.stat-card h2{
+font-size:52px;
 }
 
-td{
-  padding:18px 16px;
-  border-bottom:1px solid #eee;
-  vertical-align:top;
+.panel{
+background:rgba(255,255,255,0.05);
+border:1px solid rgba(255,255,255,0.08);
+border-radius:30px;
+padding:32px;
+backdrop-filter:blur(20px);
+margin-top:30px;
 }
 
-.scoreBadge{
-  padding:10px 14px;
-  border-radius:999px;
-  display:inline-block;
-  font-weight:bold;
+.panel-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:24px;
 }
 
-.good{
-  background:#dcfce7;
-  color:#166534;
+.panel-header h2{
+font-size:32px;
 }
 
-.mid{
-  background:#fef3c7;
-  color:#92400e;
+.panel-header p{
+color:#94a3b8;
 }
 
-.bad{
-  background:#fee2e2;
-  color:#991b1b;
+.chart-wrap{
+height:420px;
 }
 
-.metricGrid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:10px;
+.report-grid{
+display:grid;
+grid-template-columns:1fr;
+gap:30px;
 }
 
-.metricCard{
-  background:#f4f7fb;
-  border-radius:14px;
-  padding:12px;
-  text-align:center;
+.report-card{
+background:#0f172a;
+border:1px solid rgba(255,255,255,0.08);
+border-radius:30px;
+padding:32px;
 }
 
-.metricCard span{
-  display:block;
-  color:#666;
-  font-size:12px;
-  margin-bottom:8px;
+.report-top{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:20px;
+flex-wrap:wrap;
+margin-bottom:30px;
 }
 
-.metricCard strong{
-  font-size:22px;
+.domain-title h2{
+font-size:34px;
+margin-bottom:8px;
 }
 
-.check{
-  color:#166534;
-  font-weight:bold;
+.domain-title p{
+color:#94a3b8;
 }
 
-.cross{
-  color:#b91c1c;
-  font-weight:bold;
+.score-ring{
+width:160px;
+height:160px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:42px;
+font-weight:900;
+background:conic-gradient(#22c55e 0deg,#eab308 240deg,#ef4444 360deg);
+position:relative;
 }
 
-.issueList{
-  padding-left:18px;
-  line-height:1.8;
+.score-ring::before{
+content:"";
+position:absolute;
+inset:14px;
+background:#0f172a;
+border-radius:50%;
 }
 
-.footer{
-  margin-top:50px;
-  text-align:center;
-  color:#666;
+.score-ring span{
+position:relative;
+z-index:1;
+}
+
+.executive-summary{
+background:linear-gradient(135deg,#1e293b,#0f172a);
+padding:28px;
+border-radius:24px;
+border:1px solid rgba(255,255,255,0.08);
+margin-bottom:30px;
+}
+
+.executive-summary h3{
+font-size:24px;
+margin-bottom:18px;
+}
+
+.executive-summary p{
+line-height:1.8;
+color:#cbd5e1;
+font-size:16px;
+}
+
+.metrics-grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:18px;
+margin-bottom:30px;
+}
+
+.metric-box{
+background:#020617;
+padding:24px;
+border-radius:22px;
+text-align:center;
+border:1px solid rgba(255,255,255,0.06);
+}
+
+.metric-box span{
+font-size:13px;
+color:#94a3b8;
+display:block;
+margin-bottom:12px;
+}
+
+.metric-box h2{
+font-size:42px;
+}
+
+.seo-sections{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:24px;
+}
+
+.seo-box{
+background:#020617;
+border:1px solid rgba(255,255,255,0.06);
+border-radius:24px;
+padding:26px;
+}
+
+.seo-box h3{
+margin-bottom:18px;
+font-size:22px;
+}
+
+.seo-item{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:14px 0;
+border-bottom:1px solid rgba(255,255,255,0.05);
+}
+
+.badge-good,
+.badge-bad{
+padding:8px 14px;
+border-radius:999px;
+font-size:13px;
+font-weight:700;
+}
+
+.badge-good{
+background:#166534;
+color:#dcfce7;
+}
+
+.badge-bad{
+background:#7f1d1d;
+color:#fee2e2;
+}
+
+.priority-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:24px;
+margin-top:30px;
+}
+
+.priority-card{
+padding:26px;
+border-radius:24px;
+}
+
+.priority-high{
+background:linear-gradient(135deg,#450a0a,#7f1d1d);
+}
+
+.priority-medium{
+background:linear-gradient(135deg,#78350f,#92400e);
+}
+
+.priority-card h3{
+font-size:24px;
+margin-bottom:20px;
+}
+
+.priority-card ul{
+padding-left:20px;
+line-height:2;
+}
+
+.priority-card li{
+color:#e2e8f0;
+}
+
+.history-table{
+width:100%;
+border-collapse:collapse;
+}
+
+.history-table th{
+text-align:left;
+padding:18px;
+background:#020617;
+}
+
+.history-table td{
+padding:18px;
+border-bottom:1px solid rgba(255,255,255,0.06);
+}
+
+.footer-cta{
+margin-top:60px;
+background:linear-gradient(135deg,#2563eb,#7c3aed);
+padding:60px;
+border-radius:32px;
+text-align:center;
+}
+
+.footer-cta h2{
+font-size:48px;
+margin-bottom:20px;
+}
+
+.footer-cta p{
+max-width:800px;
+margin:auto;
+font-size:18px;
+line-height:1.8;
+margin-bottom:30px;
+}
+
+.footer-cta button{
+background:white;
+color:#111827;
+font-size:18px;
+padding:18px 34px;
+}
+
+.loading-box{
+display:none;
+margin-top:20px;
+padding:20px;
+border-radius:20px;
+background:#020617;
+align-items:center;
+gap:20px;
+}
+
+.spinner{
+width:32px;
+height:32px;
+border-radius:50%;
+border:4px solid #334155;
+border-top:4px solid #3b82f6;
+animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+100%{
+transform:rotate(360deg);
+}
+}
+
+@media(max-width:1200px){
+
+.hero-grid,
+.seo-sections,
+.priority-grid,
+.metrics-grid,
+.grid-4{
+grid-template-columns:1fr;
+}
+
+.hero h1{
+font-size:48px;
+}
+
+}
+
+@media(max-width:768px){
+
+.hero{
+padding:30px;
+}
+
+.hero h1{
+font-size:36px;
+}
+
+.panel-header{
+flex-direction:column;
+align-items:flex-start;
+gap:10px;
+}
+
+.score-ring{
+width:120px;
+height:120px;
+font-size:30px;
+}
+
 }
 
 </style>
-
 </head>
-
 <body>
 
 <div class="container">
 
 <div class="hero">
 
-<h1>Revenue Clutch Audit Engine</h1>
+<div class="hero-grid">
+
+<div>
+
+<h1>
+Professional <span class="gradient-text">AI SEO Audit</span> Platform For Agencies & Lead Generation
+</h1>
 
 <p>
-Professional AI-powered SEO audit platform for agencies and growth teams.
+Generate premium SEO audits, Lighthouse reports, technical SEO diagnostics, AI recommendations, and executive business summaries that convert prospects into paying clients.
 </p>
+
+<div class="hero-stats">
+
+<div class="hero-stat">
+<h2>97%</h2>
+<span>Lead Conversion Optimization</span>
+</div>
+
+<div class="hero-stat">
+<h2>Enterprise</h2>
+<span>Technical SEO Analysis</span>
+</div>
+
+<div class="hero-stat">
+<h2>AI Powered</h2>
+<span>Automated Recommendations</span>
+</div>
+
+</div>
+
+</div>
+
+<div class="audit-box">
+
+<h3>Generate SEO Audit</h3>
+
+<p>
+Analyze websites and generate enterprise-level audit reports.
+</p>
+
+<div class="input-group">
+<input type="text" id="clientName" placeholder="Client Name">
+<input type="email" id="clientEmail" placeholder="Client Email">
+<input type="text" id="companyName" placeholder="Company Name">
+</div>
 
 <textarea id="domains" placeholder="openai.com
 shopify.com
 vercel.com"></textarea>
 
-<div class="buttonRow">
-
-<button class="primaryBtn" onclick="analyzeDomains()">
-Analyze Domains
-</button>
-
-<button class="secondaryBtn" onclick="downloadCSV()">
-Export CSV
-</button>
-
-<button class="dangerBtn" onclick="downloadPDF()">
-Export PDF
-</button>
-
+<div class="button-row">
+<button class="primary-btn" onclick="analyzeDomains()">Generate Audit</button>
+<button class="secondary-btn" onclick="downloadCSV()">Export CSV</button>
+<button class="danger-btn" onclick="downloadPDF()">Export PDF</button>
 </div>
 
-<div class="loadingBox" id="loadingBox">
-
+<div class="loading-box" id="loadingBox">
 <div class="spinner"></div>
-
 <div>
-
-<strong id="loadingTitle">
-Preparing audit...
-</strong>
-
-<div id="loadingText">
-Initializing SEO engine...
+<strong id="loadingTitle">Preparing Audit...</strong>
+<div id="loadingText">Initializing AI engine...</div>
+</div>
 </div>
 
 </div>
@@ -299,73 +624,95 @@ Initializing SEO engine...
 
 </div>
 
-<div class="statsGrid">
+<div class="section grid-4">
 
-<div class="card">
-<h3>Total Audits</h3>
-<h1 id="totalAudits">0</h1>
+<div class="stat-card">
+<span>Total Audits</span>
+<h2 id="totalAudits">0</h2>
 </div>
 
-<div class="card">
-<h3>Average SEO Score</h3>
-<h1 id="avgScore">0</h1>
+<div class="stat-card">
+<span>Average SEO Score</span>
+<h2 id="avgScore">0</h2>
 </div>
 
-<div class="card">
-<h3>Best Score</h3>
-<h1 id="bestScore">0</h1>
+<div class="stat-card">
+<span>Best Score</span>
+<h2 id="bestScore">0</h2>
 </div>
 
-<div class="card">
-<h3>Average Performance</h3>
-<h1 id="avgPerformance">0</h1>
+<div class="stat-card">
+<span>Average Performance</span>
+<h2 id="avgPerformance">0</h2>
 </div>
 
 </div>
 
-<div class="section">
+<div class="panel">
 
-<h2>SEO Score Visualization</h2>
+<div class="panel-header">
+<div>
+<h2>SEO Performance Visualization</h2>
+<p>Compare technical SEO health across domains.</p>
+</div>
+</div>
 
-<div class="chartWrap">
+<div class="chart-wrap">
 <canvas id="scoreChart"></canvas>
 </div>
 
 </div>
 
-<div class="section">
+<div class="panel">
 
+<div class="panel-header">
+<div>
 <h2>Professional SEO Reports</h2>
+<p>Executive-level technical SEO diagnostics.</p>
+</div>
+</div>
 
-<div class="tableWrap">
+<div id="reportsContainer" class="report-grid"></div>
 
-<table id="resultsTable">
+</div>
 
+<div class="panel">
+
+<div class="panel-header">
+<div>
+<h2>Recent Audit History</h2>
+<p>Latest generated SEO reports.</p>
+</div>
+</div>
+
+<table class="history-table">
 <thead>
-
 <tr>
-
 <th>Domain</th>
-<th>SEO Grade</th>
-<th>Core Web Vitals</th>
-<th>Metadata</th>
-<th>Technical SEO</th>
-<th>AI Recommendations</th>
-
+<th>SEO Score</th>
+<th>Performance</th>
+<th>Date</th>
 </tr>
-
 </thead>
-
-<tbody></tbody>
-
+<tbody id="historyBody"></tbody>
 </table>
 
 </div>
 
-</div>
+<div class="footer-cta">
 
-<div class="footer">
-Revenue Clutch SEO Platform • Professional Audit System
+<h2>
+Turn SEO Audits Into Clients
+</h2>
+
+<p>
+Use Revenue Clutch Audit Engine to generate high-converting SEO reports for agencies, freelancers, consultants, and growth teams.
+</p>
+
+<button>
+Book Strategy Call
+</button>
+
 </div>
 
 </div>
@@ -376,395 +723,443 @@ const API_URL =
 "https://audit-api.t-tchdhry-tc.workers.dev";
 
 let auditResults = [];
-
 let chartInstance = null;
-
-function scoreClass(score){
-
-  if(score >= 85){
-    return "good";
-  }
-
-  if(score >= 60){
-    return "mid";
-  }
-
-  return "bad";
-
-}
 
 async function analyzeDomains(){
 
-  const domains =
-    document.getElementById("domains")
-    .value
-    .split("\\n")
-    .map(d => d.trim())
-    .filter(Boolean);
+const domains = document
+.getElementById("domains")
+.value
+.split("\n")
+.map(d=>d.trim())
+.filter(Boolean);
 
-  if(domains.length === 0){
-    alert("Please enter domains");
-    return;
-  }
+if(domains.length === 0){
+alert("Enter at least one domain");
+return;
+}
 
-  auditResults = [];
+const loadingBox = document.getElementById("loadingBox");
+loadingBox.style.display = "flex";
 
-  document.querySelector("#resultsTable tbody")
-    .innerHTML = "";
+auditResults = [];
+document.getElementById("reportsContainer").innerHTML = "";
 
-  const loadingBox =
-    document.getElementById("loadingBox");
+let completed = 0;
 
-  loadingBox.style.display = "flex";
+for(const domain of domains){
 
-  let completed = 0;
+try{
 
-  const promises = domains.map(async(domain)=>{
+completed++;
 
-    document.getElementById("loadingText")
-      .innerText =
-        `Analyzing ${domain}`;
+document.getElementById("loadingTitle").innerText = "Running Enterprise Audit";
 
-    try{
+document.getElementById("loadingText").innerText = `Analyzing ${domain} (${completed}/${domains.length})`;
 
-      const response = await fetch(
-        API_URL + "?domain=" + encodeURIComponent(domain)
-      );
+const response = await fetch(
+`${API_URL}/?domain=${encodeURIComponent(domain)}`
+);
 
-      const data = await response.json();
+const data = await response.json();
 
-      completed++;
+auditResults.push(data);
 
-      auditResults.push(data);
+renderReport(data);
+updateDashboard();
+renderChart();
 
-      renderTable(data);
-
-      updateDashboard();
-
-      renderChart();
-
-    }catch(err){
-
-      console.log(err);
-
-    }
-
-  });
-
-  await Promise.all(promises);
-
-  loadingBox.style.display = "none";
+}catch(err){
+console.log(err);
+}
 
 }
 
-function renderTable(data){
-
-  const tbody =
-    document.querySelector("#resultsTable tbody");
-
-  tbody.innerHTML += `
-
-<tr>
-
-<td>
-<strong>${data.domain}</strong>
-</td>
-
-<td>
-
-<div class="scoreBadge ${scoreClass(data.score)}">
-${data.score}
-</div>
-
-</td>
-
-<td>
-
-<div class="metricGrid">
-
-<div class="metricCard">
-<span>Performance</span>
-<strong>${data.performance || 0}</strong>
-</div>
-
-<div class="metricCard">
-<span>Accessibility</span>
-<strong>${data.accessibility || 0}</strong>
-</div>
-
-<div class="metricCard">
-<span>Best Practices</span>
-<strong>${data.bestPractices || 0}</strong>
-</div>
-
-<div class="metricCard">
-<span>SEO</span>
-<strong>${data.seoScore || 0}</strong>
-</div>
-
-</div>
-
-</td>
-
-<td>
-
-<strong>Title:</strong>
-${data.title || "Missing"}
-
-<br><br>
-
-<strong>Description:</strong>
-${data.description || "Missing"}
-
-<br><br>
-
-<strong>H1:</strong>
-${data.h1 || "Missing"}
-
-</td>
-
-<td>
-
-<div class="${data.technicalSEO?.robots ? 'check':'cross'}">
-Robots.txt
-</div>
-
-<div class="${data.technicalSEO?.sitemap ? 'check':'cross'}">
-Sitemap.xml
-</div>
-
-<div class="${data.technicalSEO?.canonical ? 'check':'cross'}">
-Canonical Tag
-</div>
-
-<div class="${data.technicalSEO?.schemaMarkup ? 'check':'cross'}">
-Schema Markup
-</div>
-
-<div class="${data.technicalSEO?.ogTags ? 'check':'cross'}">
-Open Graph
-</div>
-
-<div class="${data.technicalSEO?.twitterCards ? 'check':'cross'}">
-Twitter Cards
-</div>
-
-<div class="${data.technicalSEO?.https ? 'check':'cross'}">
-HTTPS
-</div>
-
-</td>
-
-<td>
-
-<ul class="issueList">
-
-${(data.ai || "")
-  .split(",")
-  .map(i => `<li>${i}</li>`)
-  .join("")}
-
-</ul>
-
-</td>
-
-</tr>
-
-`;
+loadingBox.style.display = "none";
+loadHistory();
 
 }
 
 function updateDashboard(){
 
-  if(auditResults.length === 0){
-    return;
-  }
+if(auditResults.length === 0)return;
 
-  const scores =
-    auditResults.map(r => Number(r.score || 0));
+const scores = auditResults.map(r=>Number(r.score || 0));
+const performances = auditResults.map(r=>Number(r.performance || 0));
 
-  const performances =
-    auditResults.map(r => Number(r.performance || 0));
+const avgScore = Math.round(scores.reduce((a,b)=>a+b,0)/scores.length);
+const avgPerformance = Math.round(performances.reduce((a,b)=>a+b,0)/performances.length);
+const bestScore = Math.max(...scores);
 
-  const avgScore =
-    Math.round(
-      scores.reduce((a,b)=>a+b,0)
-      / scores.length
-    );
 
-  const avgPerformance =
-    Math.round(
-      performances.reduce((a,b)=>a+b,0)
-      / performances.length
-    );
-
-  document.getElementById("totalAudits")
-    .innerText = auditResults.length;
-
-  document.getElementById("avgScore")
-    .innerText = avgScore;
-
-  document.getElementById("bestScore")
-    .innerText = Math.max(...scores);
-
-  document.getElementById("avgPerformance")
-    .innerText = avgPerformance;
+document.getElementById("totalAudits").innerText = auditResults.length;
+document.getElementById("avgScore").innerText = avgScore;
+document.getElementById("bestScore").innerText = bestScore;
+document.getElementById("avgPerformance").innerText = avgPerformance;
 
 }
 
 function renderChart(){
 
-  const ctx =
-    document.getElementById("scoreChart");
+const ctx = document.getElementById("scoreChart");
 
-  const labels =
-    auditResults.map(r => r.domain);
+if(chartInstance){
+chartInstance.destroy();
+}
 
-  const scores =
-    auditResults.map(r => r.score);
+chartInstance = new Chart(ctx,{
 
-  if(chartInstance){
-    chartInstance.destroy();
-  }
+type:"bar",
 
-  chartInstance = new Chart(ctx, {
+data:{
+labels:auditResults.map(r=>r.domain),
+datasets:[{
+label:"SEO Score",
+data:auditResults.map(r=>r.score),
+backgroundColor:[
+"#3b82f6",
+"#8b5cf6",
+"#06b6d4",
+"#10b981"
+],
+borderRadius:14
+}]
+},
 
-    type:"bar",
+options:{
+responsive:true,
+maintainAspectRatio:false,
+plugins:{
+legend:{
+labels:{
+color:"white"
+}
+}
+},
+scales:{
+y:{
+min:0,
+max:100,
+grid:{
+color:"rgba(255,255,255,0.05)"
+},
+ticks:{
+color:"white"
+}
+},
+x:{
+grid:{
+color:"rgba(255,255,255,0.03)"
+},
+ticks:{
+color:"white"
+}
+}
+}
+}
 
-    data:{
-      labels,
-      datasets:[{
-        label:"SEO Score",
-        data:scores,
-        borderRadius:10
-      }]
-    },
+});
 
-    options:{
-      responsive:true,
-      maintainAspectRatio:false
-    }
+}
 
-  });
+function renderReport(data){
+
+const container = document.getElementById("reportsContainer");
+
+const technical = data.technicalSEO || {};
+
+const issues = [];
+
+if(!data.title) issues.push("Missing title tag");
+if(!data.description) issues.push("Missing meta description");
+if(!data.h1) issues.push("Missing H1 heading");
+if(!technical.robots) issues.push("robots.txt missing");
+if(!technical.sitemap) issues.push("sitemap.xml missing");
+if(data.performance < 60) issues.push("Poor Lighthouse performance");
+if(data.accessibility < 70) issues.push("Low accessibility score");
+
+const opportunities = [];
+
+if(data.performance < 80) opportunities.push("Optimize images, JS bundles, and Core Web Vitals");
+if(!technical.schemaMarkup) opportunities.push("Implement structured schema markup");
+if(!technical.ogTags) opportunities.push("Add Open Graph tags for social previews");
+if(!technical.twitterCards) opportunities.push("Implement Twitter cards for social SEO");
+if(!technical.canonical) opportunities.push("Add canonical URLs to prevent duplication");
+
+container.innerHTML += `
+
+<div class="report-card">
+
+<div class="report-top">
+
+<div class="domain-title">
+<h2>${data.domain}</h2>
+<p>Professional SEO & Technical Audit Report</p>
+</div>
+
+<div class="score-ring">
+<span>${data.score || 0}</span>
+</div>
+
+</div>
+
+<div class="executive-summary">
+
+<h3>Executive Summary</h3>
+
+<p>
+${data.domain} currently has an SEO health score of ${data.score || 0}/100.
+The website demonstrates ${data.performance >= 70 ? "strong" : "weak"} technical optimization and ${data.seoScore >= 70 ? "solid" : "limited"} search engine readiness.
+Key improvements should focus on technical SEO architecture, metadata optimization, performance enhancement, and structured data implementation to improve rankings, organic traffic, and conversion potential.
+</p>
+
+</div>
+
+<div class="metrics-grid">
+
+<div class="metric-box">
+<span>Performance</span>
+<h2>${data.performance || 0}</h2>
+</div>
+
+<div class="metric-box">
+<span>Accessibility</span>
+<h2>${data.accessibility || 0}</h2>
+</div>
+
+<div class="metric-box">
+<span>Best Practices</span>
+<h2>${data.bestPractices || 0}</h2>
+</div>
+
+<div class="metric-box">
+<span>SEO Score</span>
+<h2>${data.seoScore || 0}</h2>
+</div>
+
+</div>
+
+<div class="seo-sections">
+
+<div class="seo-box">
+
+<h3>Metadata Analysis</h3>
+
+<div class="seo-item">
+<span>Title Tag</span>
+${data.title ? '<div class="badge-good">Detected</div>' : '<div class="badge-bad">Missing</div>'}
+</div>
+
+<div class="seo-item">
+<span>Meta Description</span>
+${data.description ? '<div class="badge-good">Detected</div>' : '<div class="badge-bad">Missing</div>'}
+</div>
+
+<div class="seo-item">
+<span>H1 Heading</span>
+${data.h1 ? '<div class="badge-good">Detected</div>' : '<div class="badge-bad">Missing</div>'}
+</div>
+
+<div class="seo-item">
+<span>Canonical URL</span>
+${technical.canonical ? '<div class="badge-good">Implemented</div>' : '<div class="badge-bad">Missing</div>'}
+</div>
+
+<div class="seo-item">
+<span>Schema Markup</span>
+${technical.schemaMarkup ? '<div class="badge-good">Implemented</div>' : '<div class="badge-bad">Missing</div>'}
+</div>
+
+</div>
+
+<div class="seo-box">
+
+<h3>Technical SEO Health</h3>
+
+<div class="seo-item">
+<span>robots.txt</span>
+${technical.robots ? '<div class="badge-good">Found</div>' : '<div class="badge-bad">Missing</div>'}
+</div>
+
+<div class="seo-item">
+<span>sitemap.xml</span>
+${technical.sitemap ? '<div class="badge-good">Found</div>' : '<div class="badge-bad">Missing</div>'}
+</div>
+
+<div class="seo-item">
+<span>Open Graph</span>
+${technical.ogTags ? '<div class="badge-good">Configured</div>' : '<div class="badge-bad">Missing</div>'}
+</div>
+
+<div class="seo-item">
+<span>Twitter Cards</span>
+${technical.twitterCards ? '<div class="badge-good">Configured</div>' : '<div class="badge-bad">Missing</div>'}
+</div>
+
+<div class="seo-item">
+<span>HTTPS Security</span>
+${technical.https ? '<div class="badge-good">Secure</div>' : '<div class="badge-bad">Insecure</div>'}
+</div>
+
+</div>
+
+</div>
+
+<div class="priority-grid">
+
+<div class="priority-card priority-high">
+
+<h3>Critical Issues</h3>
+
+<ul>
+${issues.length > 0 ? issues.map(i=>`<li>${i}</li>`).join("") : '<li>No major technical SEO issues detected</li>'}
+</ul>
+
+</div>
+
+<div class="priority-card priority-medium">
+
+<h3>Growth Opportunities</h3>
+
+<ul>
+${opportunities.length > 0 ? opportunities.map(i=>`<li>${i}</li>`).join("") : '<li>Website is well optimized</li>'}
+</ul>
+
+</div>
+
+</div>
+
+</div>
+
+`;
+
+}
+
+async function loadHistory(){
+
+try{
+
+const response = await fetch(`${API_URL}/?history=1`);
+const data = await response.json();
+
+const tbody = document.getElementById("historyBody");
+
+tbody.innerHTML = "";
+
+(data || []).slice(0,10).forEach(row=>{
+
+tbody.innerHTML += `
+<tr>
+<td>${row.domain || ""}</td>
+<td>${row.score || 0}</td>
+<td>${row.performance || 0}</td>
+<td>${row.created_at || ""}</td>
+</tr>
+`;
+
+});
+
+}catch(err){
+console.log(err);
+}
 
 }
 
 function downloadCSV(){
 
-  if(auditResults.length === 0){
-    alert("No reports available");
-    return;
-  }
+if(auditResults.length === 0){
+alert("No reports available");
+return;
+}
 
-  const headers = [
-    "Domain",
-    "Score",
-    "Performance",
-    "Accessibility",
-    "Best Practices",
-    "SEO"
-  ];
+const headers = [
+"Domain",
+"SEO Score",
+"Performance",
+"Accessibility",
+"Best Practices",
+"SEO",
+"AI"
+];
 
-  let csv =
-    headers.join(",") + "\\n";
+let csv = headers.join(",") + "\n";
 
-  auditResults.forEach(r => {
+auditResults.forEach(r=>{
 
-    csv += [
-      r.domain,
-      r.score,
-      r.performance,
-      r.accessibility,
-      r.bestPractices,
-      r.seoScore
-    ].join(",") + "\\n";
+csv += [
+r.domain,
+r.score,
+r.performance,
+r.accessibility,
+r.bestPractices,
+r.seoScore,
+r.ai
+].join(",") + "\n";
 
-  });
+});
 
-  const blob =
-    new Blob([csv], {
-      type:"text/csv"
-    });
-
-  const url =
-    URL.createObjectURL(blob);
-
-  const a =
-    document.createElement("a");
-
-  a.href = url;
-
-  a.download =
-    "seo-report.csv";
-
-  a.click();
+const blob = new Blob([csv],{type:"text/csv"});
+const url = URL.createObjectURL(blob);
+const a = document.createElement("a");
+a.href = url;
+a.download = "revenue-clutch-report.csv";
+a.click();
 
 }
 
 async function downloadPDF(){
 
-  if(auditResults.length === 0){
-    alert("No reports available");
-    return;
-  }
+if(auditResults.length === 0){
+alert("No reports available");
+return;
+}
 
-  const { jsPDF } = window.jspdf;
+const { jsPDF } = window.jspdf;
+const doc = new jsPDF();
 
-  const doc = new jsPDF();
+let y = 20;
 
-  doc.setFontSize(22);
 
-  doc.text(
-    "Revenue Clutch SEO Report",
-    20,
-    20
-  );
+doc.setFontSize(24);
+doc.text("Revenue Clutch SEO Report",20,y);
 
-  let y = 40;
+y += 20;
 
-  auditResults.forEach((r,index)=>{
+for(const r of auditResults){
 
-    doc.setFontSize(14);
+if(y > 250){
+doc.addPage();
+y = 20;
+}
 
-    doc.text(
-      `${index+1}. ${r.domain}`,
-      20,
-      y
-    );
 
-    y += 10;
+doc.setFontSize(18);
+doc.text(r.domain,20,y);
 
-    doc.setFontSize(11);
+y += 12;
 
-    doc.text(`SEO Score: ${r.score}`,20,y);
-    y += 8;
-
-    doc.text(`Performance: ${r.performance}`,20,y);
-    y += 8;
-
-    doc.text(`Accessibility: ${r.accessibility}`,20,y);
-    y += 8;
-
-    doc.text(`Best Practices: ${r.bestPractices}`,20,y);
-    y += 8;
-
-    doc.text(`SEO: ${r.seoScore}`,20,y);
-
-    y += 15;
-
-    if(y > 260){
-      doc.addPage();
-      y = 20;
-    }
-
-  });
-
-  doc.save("seo-report.pdf");
+doc.setFontSize(12);
+doc.text(`SEO Score: ${r.score}`,20,y);
+y += 8;
+doc.text(`Performance: ${r.performance}`,20,y);
+y += 8;
+doc.text(`Accessibility: ${r.accessibility}`,20,y);
+y += 8;
+doc.text(`Best Practices: ${r.bestPractices}`,20,y);
+y += 8;
+doc.text(`SEO Score: ${r.seoScore}`,20,y);
+y += 16;
 
 }
+
+
+doc.save("revenue-clutch-report.pdf");
+
+}
+
+loadHistory();
 
 </script>
 
 </body>
-
 </html>
