@@ -6,10 +6,12 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<title>Revenue Clutch Audit Engine</title>
+<title>Revenue Clutch AI Audit Platform</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
 
@@ -20,48 +22,49 @@ box-sizing:border-box;
 }
 
 body{
-font-family:Arial,sans-serif;
-background:#f1f5f9;
-color:#0f172a;
-overflow-x:hidden;
+font-family:'Inter',sans-serif;
+background:#f4f7fb;
+color:#111827;
 }
 
 .container{
-width:100%;
-max-width:1400px;
+max-width:1500px;
 margin:auto;
-padding:30px 20px 80px;
+padding:30px 20px 100px;
 }
 
 .hero{
-background:linear-gradient(135deg,#020617,#0f172a);
-padding:40px;
-border-radius:24px;
+background:linear-gradient(135deg,#020617,#0f172a,#111827);
+padding:50px;
+border-radius:28px;
 color:white;
-box-shadow:0 10px 30px rgba(0,0,0,0.2);
+box-shadow:0 15px 40px rgba(0,0,0,0.25);
 }
 
 .hero h1{
-font-size:42px;
-margin-bottom:10px;
+font-size:52px;
+font-weight:800;
+margin-bottom:12px;
 }
 
 .hero p{
-opacity:0.85;
-margin-bottom:25px;
 font-size:18px;
+opacity:0.85;
+margin-bottom:30px;
+max-width:900px;
+line-height:1.7;
 }
 
 textarea{
 width:100%;
 height:180px;
 border:none;
-border-radius:16px;
-padding:20px;
+border-radius:20px;
+padding:24px;
 font-size:16px;
 resize:vertical;
 outline:none;
-margin-bottom:20px;
+margin-bottom:25px;
 }
 
 .buttonRow{
@@ -72,12 +75,12 @@ flex-wrap:wrap;
 
 button{
 border:none;
-padding:14px 28px;
-border-radius:14px;
-font-weight:bold;
+padding:15px 30px;
+border-radius:16px;
+font-size:15px;
+font-weight:700;
 cursor:pointer;
 transition:0.2s;
-font-size:15px;
 }
 
 button:hover{
@@ -106,13 +109,13 @@ gap:15px;
 margin-top:25px;
 background:white;
 color:#111827;
-border-radius:18px;
-padding:18px 20px;
+padding:20px;
+border-radius:20px;
 }
 
 .spinner{
-width:28px;
-height:28px;
+width:30px;
+height:30px;
 border:4px solid #ddd;
 border-top:4px solid #2563eb;
 border-radius:50%;
@@ -127,158 +130,192 @@ transform:rotate(360deg);
 
 .statsGrid{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
 gap:20px;
-margin-top:30px;
+margin-top:35px;
 }
 
 .card{
 background:white;
-border-radius:20px;
-padding:24px;
-box-shadow:0 4px 12px rgba(0,0,0,0.08);
+padding:28px;
+border-radius:24px;
+box-shadow:0 5px 15px rgba(0,0,0,0.07);
 }
 
 .card h3{
-color:#666;
 font-size:15px;
-margin-bottom:15px;
+color:#666;
+margin-bottom:16px;
 }
 
 .card h1{
-font-size:42px;
+font-size:48px;
+font-weight:800;
 }
 
-.chartCard,
-.resultsCard,
-.historyCard{
+.section{
 background:white;
-border-radius:20px;
+padding:30px;
+border-radius:24px;
 margin-top:30px;
-padding:25px;
-box-shadow:0 4px 12px rgba(0,0,0,0.08);
-overflow:hidden;
+box-shadow:0 5px 15px rgba(0,0,0,0.07);
+}
+
+.section h2{
+margin-bottom:20px;
+font-size:28px;
 }
 
 .chartWrap{
-position:relative;
 height:420px;
-width:100%;
+}
+
+.summaryGrid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:20px;
+}
+
+.summaryCard{
+padding:25px;
+border-radius:20px;
+background:#f8fafc;
+border:1px solid #e5e7eb;
+}
+
+.summaryCard h3{
+font-size:15px;
+color:#666;
+margin-bottom:10px;
+}
+
+.summaryCard p{
+font-size:16px;
+line-height:1.7;
 }
 
 .tableWrap{
-width:100%;
 overflow-x:auto;
 }
 
 table{
 width:100%;
 border-collapse:collapse;
-min-width:1200px;
+min-width:1400px;
 }
 
 th{
-background:#020617;
+background:#0f172a;
 color:white;
-padding:16px;
+padding:18px;
 text-align:left;
 font-size:14px;
 }
 
 td{
-padding:18px 16px;
+padding:20px 18px;
 border-bottom:1px solid #eee;
 vertical-align:top;
 font-size:14px;
+line-height:1.7;
 }
 
 tr:hover{
-background:#f8fafc;
+background:#f9fbff;
 }
 
-.score-badge{
-padding:10px 14px;
-border-radius:999px;
-font-weight:bold;
+.scoreBadge{
 display:inline-block;
-min-width:80px;
-text-align:center;
+padding:10px 18px;
+border-radius:999px;
+font-weight:700;
 }
 
-.score-good{
+.good{
 background:#dcfce7;
 color:#166534;
 }
 
-.score-mid{
+.mid{
 background:#fef3c7;
 color:#92400e;
 }
 
-.score-bad{
+.bad{
 background:#fee2e2;
 color:#991b1b;
 }
 
-.metric-grid{
+.metricGrid{
 display:grid;
 grid-template-columns:repeat(2,1fr);
-gap:10px;
+gap:12px;
 }
 
-.metric-card{
-background:#f8fafc;
-padding:12px;
-border-radius:14px;
+.metricCard{
+background:#f4f7fb;
+padding:15px;
+border-radius:16px;
 text-align:center;
 }
 
-.metric-card span{
+.metricCard span{
 display:block;
 font-size:12px;
 color:#666;
 margin-bottom:8px;
 }
 
-.metric-card strong{
-font-size:22px;
+.metricCard strong{
+font-size:24px;
 }
 
-.meta-box{
-line-height:1.7;
-max-width:350px;
-word-break:break-word;
-}
-
-.recommendation-box{
-line-height:1.8;
-min-width:250px;
-}
-
-.issues{
-padding-left:18px;
+.issueList{
+padding-left:20px;
 color:#b91c1c;
 }
 
+.issueList li{
+margin-bottom:8px;
+}
+
+.aiBox{
+line-height:1.9;
+}
+
+.leadForm{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:20px;
+}
+
+.input{
+width:100%;
+padding:16px;
+border-radius:14px;
+border:1px solid #d1d5db;
+font-size:15px;
+}
+
 .footer{
-margin-top:50px;
 text-align:center;
-color:#666;
+margin-top:60px;
 font-size:14px;
+color:#666;
 }
 
 @media(max-width:768px){
 
+.hero{
+padding:30px;
+}
+
 .hero h1{
-font-size:30px;
+font-size:36px;
 }
 
-.metric-grid{
+.metricGrid{
 grid-template-columns:1fr;
-}
-
-table{
-min-width:900px;
 }
 
 }
@@ -293,10 +330,12 @@ min-width:900px;
 
 <div class="hero">
 
-<h1>Revenue Clutch Audit Engine</h1>
+<h1>
+Revenue Clutch AI Audit Platform
+</h1>
 
 <p>
-AI-powered SEO + Lighthouse audit reports for agencies, freelancers, and growth teams.
+Generate professional SEO audit reports, technical website analysis, Lighthouse diagnostics, AI recommendations, and client-ready reports for agencies, freelancers, and growth teams.
 </p>
 
 <textarea id="domains" placeholder="example.com
@@ -307,7 +346,7 @@ vercel.com"></textarea>
 <div class="buttonRow">
 
 <button class="primaryBtn" onclick="analyzeDomains()">
-Analyze Domains
+Run AI Audit
 </button>
 
 <button class="secondaryBtn" onclick="downloadCSV()">
@@ -331,7 +370,7 @@ Preparing audit...
 </strong>
 
 <div id="loadingText">
-Initializing SEO engine...
+Initializing AI audit engine...
 </div>
 
 </div>
@@ -364,9 +403,40 @@ Initializing SEO engine...
 
 </div>
 
-<div class="chartCard">
+<div class="section">
 
-<h2>SEO Score Visualization</h2>
+<h2>Executive Summary</h2>
+
+<div class="summaryGrid">
+
+<div class="summaryCard">
+<h3>SEO Opportunity</h3>
+<p id="seoOpportunity">
+No analysis yet.
+</p>
+</div>
+
+<div class="summaryCard">
+<h3>Technical Risk</h3>
+<p id="technicalRisk">
+No analysis yet.
+</p>
+</div>
+
+<div class="summaryCard">
+<h3>Business Impact</h3>
+<p id="businessImpact">
+No analysis yet.
+</p>
+</div>
+
+</div>
+
+</div>
+
+<div class="section">
+
+<h2>SEO Performance Visualization</h2>
 
 <div class="chartWrap">
 <canvas id="scoreChart"></canvas>
@@ -374,9 +444,9 @@ Initializing SEO engine...
 
 </div>
 
-<div class="resultsCard">
+<div class="section">
 
-<h2>Audit Results</h2>
+<h2>Detailed Audit Reports</h2>
 
 <div class="tableWrap">
 
@@ -385,12 +455,14 @@ Initializing SEO engine...
 <thead>
 
 <tr>
+
 <th>Domain</th>
 <th>SEO Score</th>
-<th>Lighthouse Metrics</th>
+<th>Performance Metrics</th>
 <th>Metadata</th>
-<th>Technical SEO Issues</th>
-<th>AI Analysis</th>
+<th>Technical Issues</th>
+<th>AI Recommendations</th>
+
 </tr>
 
 </thead>
@@ -403,7 +475,25 @@ Initializing SEO engine...
 
 </div>
 
-<div class="historyCard">
+<div class="section">
+
+<h2>Lead Generation</h2>
+
+<div class="leadForm">
+
+<input class="input" type="text" placeholder="Full Name">
+
+<input class="input" type="email" placeholder="Business Email">
+
+<input class="input" type="text" placeholder="Company Name">
+
+<input class="input" type="text" placeholder="Website URL">
+
+</div>
+
+</div>
+
+<div class="section">
 
 <h2>Recent Audit History</h2>
 
@@ -414,10 +504,12 @@ Initializing SEO engine...
 <thead>
 
 <tr>
+
 <th>Domain</th>
 <th>SEO Score</th>
 <th>Performance</th>
 <th>Date</th>
+
 </tr>
 
 </thead>
@@ -431,23 +523,29 @@ Initializing SEO engine...
 </div>
 
 <div class="footer">
-Revenue Clutch SEO Engine • Premium SaaS Audit Platform
+Revenue Clutch AI Audit Platform • Premium SEO Intelligence Suite
 </div>
 
 </div>
 
 <script>
 
-const API_URL = "https://audit-api.t-tchdhry-tc.workers.dev";
+const API_URL = "https://YOUR-WORKER-URL.workers.dev";
 
 let auditResults = [];
 let chartInstance = null;
 
 function getScoreClass(score){
 
-if(score >= 85) return "score-good";
-if(score >= 60) return "score-mid";
-return "score-bad";
+if(score >= 85){
+return "good";
+}
+
+if(score >= 60){
+return "mid";
+}
+
+return "bad";
 
 }
 
@@ -463,15 +561,18 @@ const domains = document
 if(domains.length === 0){
 
 alert("Please enter at least one domain");
+
 return;
 
 }
 
 auditResults = [];
 
-document.querySelector("#resultsTable tbody").innerHTML = "";
+document.querySelector("#resultsTable tbody")
+.innerHTML = "";
 
-const loadingBox = document.getElementById("loadingBox");
+const loadingBox =
+document.getElementById("loadingBox");
 
 loadingBox.style.display = "flex";
 
@@ -481,21 +582,17 @@ const promises = domains.map(async(domain)=>{
 
 try{
 
-document.getElementById("loadingText").innerText =
-`Processing ${completed + 1} of ${domains.length}: ${domain}`;
+document.getElementById("loadingText")
+.innerText =
+`Analyzing ${domain}`;
 
 const response = await fetch(
-`${API_URL}/?domain=${encodeURIComponent(domain)}`
+API_URL + "?domain=" + encodeURIComponent(domain)
 );
 
 const data = await response.json();
 
 completed++;
-
-if(data.error){
-console.log(data.error);
-return;
-}
 
 auditResults.push(data);
 
@@ -504,6 +601,8 @@ renderTable(data);
 updateDashboard();
 
 renderChart();
+
+generateSummary();
 
 }catch(err){
 
@@ -528,51 +627,62 @@ document.querySelector("#resultsTable tbody");
 
 const issues = [];
 
-if(!data.title) issues.push("Missing title tag");
-if(!data.description) issues.push("Missing meta description");
-if(!data.h1) issues.push("Missing H1");
-if(data.performance < 50) issues.push("Poor page performance");
-if(data.accessibility < 70) issues.push("Accessibility improvements needed");
-if(data.bestPractices < 70) issues.push("Best practices score is low");
+if(!data.title){
+issues.push("Missing title tag");
+}
+
+if(!data.description){
+issues.push("Missing meta description");
+}
+
+if(!data.h1){
+issues.push("Missing H1 heading");
+}
+
+if(data.performance < 50){
+issues.push("Poor page performance");
+}
 
 tbody.innerHTML += `
 
 <tr>
 
 <td>
-<strong>${data.domain || ""}</strong>
+<strong>${data.domain}</strong>
 </td>
 
 <td>
 
-<div class="score-badge ${getScoreClass(data.score || 0)}">
-${data.score || 0}
+<div class="scoreBadge ${getScoreClass(data.score)}">
+
+${data.score}
+
 </div>
 
 </td>
 
 <td>
 
-<div class="metric-grid">
+<div class="metricGrid">
 
-<div class="metric-card">
+<div class="metricCard">
 <span>Performance</span>
-<strong>${data.performance || 0}</strong>
+<strong>${data.performance}</strong>
 </div>
 
-<div class="metric-card">
+<div class="metricCard">
 <span>Accessibility</span>
-<strong>${data.accessibility || 0}</strong>
+<strong>${data.accessibility}</strong>
 </div>
 
-<div class="metric-card">
+<div class="metricCard">
 <span>Best Practices</span>
-<strong>${data.bestPractices || 0}</strong>
+<strong>${data.bestPractices}</strong>
 </div>
 
-<div class="metric-card">
+<div class="metricCard">
 <span>SEO</span>
-<strong>${data.seoScore || 0}</strong>
+<strong>${data.seoScore}</strong>
 </div>
 
 </div>
@@ -580,8 +690,6 @@ ${data.score || 0}
 </td>
 
 <td>
-
-<div class="meta-box">
 
 <strong>Title:</strong><br>
 ${data.title || "Missing"}
@@ -596,8 +704,6 @@ ${data.description || "Missing"}
 <strong>H1:</strong><br>
 ${data.h1 || "Missing"}
 
-</div>
-
 </td>
 
 <td>
@@ -606,8 +712,10 @@ ${
 issues.length > 0
 ?
 `
-<ul class="issues">
+<ul class="issueList">
+
 ${issues.map(issue => `<li>${issue}</li>`).join("")}
+
 </ul>
 `
 :
@@ -618,8 +726,10 @@ ${issues.map(issue => `<li>${issue}</li>`).join("")}
 
 <td>
 
-<div class="recommendation-box">
-${data.ai || ""}
+<div class="aiBox">
+
+${data.ai}
+
 </div>
 
 </td>
@@ -632,7 +742,9 @@ ${data.ai || ""}
 
 function updateDashboard(){
 
-if(auditResults.length === 0) return;
+if(auditResults.length === 0){
+return;
+}
 
 const scores =
 auditResults.map(r => Number(r.score || 0));
@@ -641,25 +753,64 @@ const performances =
 auditResults.map(r => Number(r.performance || 0));
 
 const avgScore =
-Math.round(scores.reduce((a,b)=>a+b,0) / scores.length);
+Math.round(
+scores.reduce((a,b)=>a+b,0) / scores.length
+);
 
 const avgPerformance =
-Math.round(performances.reduce((a,b)=>a+b,0) / performances.length);
+Math.round(
+performances.reduce((a,b)=>a+b,0) / performances.length
+);
 
 const bestScore =
 Math.max(...scores);
 
-document.getElementById("totalAudits").innerText =
-auditResults.length;
+document.getElementById("totalAudits")
+.innerText = auditResults.length;
 
-document.getElementById("avgScore").innerText =
-avgScore;
+document.getElementById("avgScore")
+.innerText = avgScore;
 
-document.getElementById("bestScore").innerText =
-bestScore;
+document.getElementById("bestScore")
+.innerText = bestScore;
 
-document.getElementById("avgPerformance").innerText =
-avgPerformance;
+document.getElementById("avgPerformance")
+.innerText = avgPerformance;
+
+}
+
+function generateSummary(){
+
+if(auditResults.length === 0){
+return;
+}
+
+const avg =
+Math.round(
+auditResults.reduce((a,b)=>a+b.score,0)
+/
+auditResults.length
+);
+
+document.getElementById("seoOpportunity")
+.innerText =
+avg >= 80
+?
+"Strong optimization foundation with moderate growth opportunities."
+:
+"Significant SEO growth opportunities detected across technical and metadata optimization.";
+
+document.getElementById("technicalRisk")
+.innerText =
+avg >= 80
+?
+"Low technical risk detected."
+:
+"Technical SEO weaknesses may negatively impact rankings and conversions.";
+
+document.getElementById("businessImpact")
+.innerText =
+"Improving technical SEO and performance can increase search visibility, user engagement, and conversion potential.";
 
 }
 
@@ -688,7 +839,7 @@ datasets:[{
 label:"SEO Score",
 data:scores,
 borderWidth:1,
-borderRadius:8
+borderRadius:12
 }]
 },
 
@@ -704,8 +855,11 @@ maintainAspectRatio:false
 function downloadCSV(){
 
 if(auditResults.length === 0){
-alert("No data available");
+
+alert("No reports available");
+
 return;
+
 }
 
 const headers = [
@@ -715,7 +869,7 @@ const headers = [
 "Accessibility",
 "Best Practices",
 "SEO",
-"AI Analysis"
+"AI"
 ];
 
 const rows =
@@ -741,7 +895,9 @@ csv += row
 });
 
 const blob =
-new Blob([csv], { type:"text/csv" });
+new Blob([csv], {
+type:"text/csv"
+});
 
 const url =
 URL.createObjectURL(blob);
@@ -751,7 +907,8 @@ document.createElement("a");
 
 a.href = url;
 
-a.download = "seo-report.csv";
+a.download =
+"revenue-clutch-report.csv";
 
 a.click();
 
@@ -762,53 +919,70 @@ URL.revokeObjectURL(url);
 async function downloadPDF(){
 
 if(auditResults.length === 0){
-alert("No data available");
+
+alert("No reports available");
+
 return;
+
 }
 
 const { jsPDF } = window.jspdf;
 
 const doc = new jsPDF();
 
-doc.setFontSize(22);
+doc.setFontSize(24);
 
-doc.text("Revenue Clutch SEO Report",20,20);
+doc.text(
+"Revenue Clutch SEO Report",
+20,
+20
+);
 
 let y = 40;
 
 auditResults.forEach((r,index)=>{
 
-doc.setFontSize(14);
+doc.setFontSize(15);
 
-doc.text(`${index+1}. ${r.domain}`,20,y);
+doc.text(
+`${index + 1}. ${r.domain}`,
+20,
+y
+);
 
 y += 10;
 
 doc.setFontSize(11);
 
 doc.text(`SEO Score: ${r.score}`,20,y);
-y += 8;
+y += 7;
 
 doc.text(`Performance: ${r.performance}`,20,y);
-y += 8;
+y += 7;
 
 doc.text(`Accessibility: ${r.accessibility}`,20,y);
-y += 8;
+y += 7;
 
 doc.text(`Best Practices: ${r.bestPractices}`,20,y);
-y += 8;
+y += 7;
 
 doc.text(`SEO: ${r.seoScore}`,20,y);
-y += 15;
+y += 10;
+
+doc.text(`AI Analysis: ${r.ai}`,20,y);
+y += 20;
 
 if(y > 260){
+
 doc.addPage();
+
 y = 20;
+
 }
 
 });
 
-doc.save("seo-report.pdf");
+doc.save("revenue-clutch-report.pdf");
 
 }
 
@@ -817,7 +991,7 @@ async function loadHistory(){
 try{
 
 const response = await fetch(
-`${API_URL}/?history=1`
+API_URL + "?history=1"
 );
 
 const data = await response.json();
@@ -833,13 +1007,13 @@ tbody.innerHTML += `
 
 <tr>
 
-<td>${row.domain || ""}</td>
+<td>${row.domain}</td>
 
-<td>${row.score || 0}</td>
+<td>${row.score}</td>
 
-<td>${row.performance || 0}</td>
+<td>${row.performance}</td>
 
-<td>${row.created_at || ""}</td>
+<td>${row.created_at}</td>
 
 </tr>
 
@@ -860,4 +1034,5 @@ loadHistory();
 </script>
 
 </body>
+
 </html>
